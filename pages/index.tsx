@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 
 interface Position {
   latitude: number;
@@ -50,21 +49,33 @@ const Index = () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
           };
+
           try {
-            await axios.post('/api/location', currentPosition);
+            const postResponse = await fetch('/api/location', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(currentPosition),
+            });
+
+            if (!postResponse.ok) {
+              throw new Error(`HTTP error! Status: ${postResponse.status}`);
+            }
+
             console.log('Location updated successfully');
           } catch (error) {
-            if (axios.isAxiosError(error) && error.response) {
-              console.error('Failed to update location:', error.response.data);
-              setLoadError(`Error updating your location: ${error.response.data.message || 'Unknown error'}`);
-            } else {
-              console.error('Failed to update location:', error);
-              setLoadError('Error updating your location.');
-            }
+            console.error('Failed to update location:', error);
+            setLoadError('Error updating your location.');
           }
+
           try {
-            const response = await axios.get<Location>('/api/location');
-            const { latitude, longitude } = response.data;
+            const getResponse = await fetch('/api/location');
+            if (!getResponse.ok) {
+              throw new Error(`HTTP error! Status: ${getResponse.status}`);
+            }
+            const locationData: Location = await getResponse.json();
+            const { latitude, longitude } = locationData;
             const mapOptions = {
               center: { lat: latitude, lng: longitude },
               zoom: 15,
