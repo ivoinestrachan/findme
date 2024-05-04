@@ -31,7 +31,7 @@ export default async function handler(
         latitude: Number(location.latitude),
         longitude: Number(location.longitude),
         createdAt: location.createdAt,
-        updatedAt: location.updatedAt
+        updatedAt: location.updatedAt,
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to update location', message: (error instanceof Error) ? error.message : 'Unknown error' });
@@ -49,7 +49,7 @@ export default async function handler(
           latitude: Number(location.latitude),
           longitude: Number(location.longitude),
           createdAt: location.createdAt,
-          updatedAt: location.updatedAt
+          updatedAt: location.updatedAt,
         });
       } else {
         res.status(404).json({ message: 'No location found' });
