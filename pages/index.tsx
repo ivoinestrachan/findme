@@ -54,9 +54,13 @@ const Index = () => {
             await axios.post('/api/location', currentPosition);
             console.log('Location updated successfully');
           } catch (error) {
-            console.error('Failed to update location:', error);
-            setLoadError('Error updating your location.');
-            return;
+            if (axios.isAxiosError(error) && error.response) {
+              console.error('Failed to update location:', error.response.data);
+              setLoadError(`Error updating your location: ${error.response.data.message || 'Unknown error'}`);
+            } else {
+              console.error('Failed to update location:', error);
+              setLoadError('Error updating your location.');
+            }
           }
           try {
             const response = await axios.get<Location>('/api/location');
